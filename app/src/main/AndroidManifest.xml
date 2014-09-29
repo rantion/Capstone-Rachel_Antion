@@ -23,6 +23,12 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <receiver
+            android:name=".NetworkProviderStatusReciever"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
     </application>
 
     <meta-data
@@ -37,7 +43,7 @@
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but are recommended.
     -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

@@ -19,6 +19,9 @@ public class MyLocationListener implements LocationListener {
         double longitude = location.getLongitude();
         float accuracy = location.getAccuracy();
         long time = location.getTime();
+
+        String logMessage = LogHelper.FormatLocationInfo(provider, latitude, longitude, accuracy,time);
+        Log.d(_logTag,"Monitor Location: "+logMessage);
     }
 
     @Override
