@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/action_bar"
+    tools:context=".MyActivity">
+    <item android:id="@+id/accurate_provider"
+        android:title="Accurate Provider"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id = "@+id/low_power_provider"
+      android:title="Low Power Provider"
+      android:orderInCategory="100"
+      android:showAsAction="never" />
+    <item android:id="@+id/network_listener"
+        android:title="Start Network Listener"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id = "@+id/passive_listener"
+        android:title="Start Passive Listener"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+</menu>

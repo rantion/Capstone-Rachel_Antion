@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -17,8 +18,9 @@ public class AlertUserDialog extends DialogFragment implements DialogInterface.O
 
     }
 
-    public AlertUserDialog(String displayMessage){
+    public AlertUserDialog(String displayMessage, String settingsActivityAction){
         _displayMessage = displayMessage != null ? displayMessage : "MESSAGE NOT SET";
+        _settingsActivityAction = settingsActivityAction;
     }
 
     @Override
@@ -39,6 +41,10 @@ public class AlertUserDialog extends DialogFragment implements DialogInterface.O
         switch (which){
             case Dialog.BUTTON_POSITIVE:
                 //perform desired action response to user clicking "OK"
+
+                if(_settingsActivityAction != null){
+                   startActivity(new Intent(_settingsActivityAction));
+                }
                 break;
         }
     }

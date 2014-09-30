@@ -35,7 +35,6 @@ public class NetworkProviderStatusReciever extends BroadcastReceiver {
             NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             Log.d(_logTag,String.format("Monitor Location Wifi Radio Available: "+(wifiInfo.isAvailable() ? "Yes" : "No")));
         }
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void start(Context context){

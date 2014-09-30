@@ -97,11 +97,11 @@ public class LogHelper {
        String horizontaAccuracyDisplay = translateAccuracyFineCourse(horizontalAccuracy);
         //String powerRequirementsDisplay =translatePower(powerRequirements);
 
-        String logMessage = String.format("%s | enabled: %s | horizontal accuracy: % | power:%s |" +
-                "cost: %s | uses cell: %s | uses network: %s | uses satellite: %s | " +
-                "has altitude: %s | has bearing: %s | has speed :%s", name, enabledMessage,
-                horizontaAccuracyDisplay, powerRequirements,yOrN(hasMonetaryCost), yOrN(requiresCell),
-                yOrN(requiresNetwork), yOrN(requiresSatellite), yOrN(supportsAltitude), yOrN(supportsBearing), yOrN(supportsBearing));
+        String logMessage = String.format(name+ " | "+ " enabled: "+enabledMessage+" | horizontal accuracy: " +horizontaAccuracyDisplay+
+                "| power: " +powerRequirements+" | cost: " +yOrN(hasMonetaryCost)+" | uses cell: "+yOrN(requiresCell)+" | uses network: "
+                +yOrN(requiresNetwork)+" | uses satellite: "+ yOrN(requiresSatellite)+" | " +    "has altitude: "+yOrN(supportsAltitude)+
+                " | has bearing: "+ yOrN(supportsBearing));
+
         return logMessage;
     }
 }

@@ -10,10 +10,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.google.android.gms.maps.SupportMapFragment;
 
 import java.net.NetworkInterface;
 import java.util.List;
@@ -21,11 +24,13 @@ import java.util.List;
 /**
  * Created by Rachel on 8/20/14.
  */
-public class MyActivity extends Activity {
+public class MyActivity extends FragmentActivity {
     final String _logTag = "Monitor Location";
 
     LocationListener _networkListener;
     LocationListener _gpsListener;
+    LocationListener _passiveLocationListener;
+
 
     NetworkProviderStatusReciever _statusReciever;
 
@@ -33,12 +38,38 @@ public class MyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
-       // inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.accurate_provider) {
+            onAccurateProvider(item);
+            return true;
+        }
+        if (id == R.id.low_power_provider) {
+            onLowPowerProvider(item);
+            return true;
+        }
+        if (id == R.id.network_listener) {
+            onStartNetworkListener(item);
+            return true;
+        }
+        if (id == R.id.passive_listener) {
+            onStartPassiveListener(item);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onAccurateProvider(MenuItem item){
@@ -83,7 +114,10 @@ public class MyActivity extends Activity {
     }
 
     public void onStartPassiveListener(MenuItem item){
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        _passiveLocationListener = new MyLocationListener();
+        lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0, 0, _passiveLocationListener);
     }
 
     public void stopLocationListener(){
@@ -112,7 +146,7 @@ public class MyActivity extends Activity {
         boolean isAvailable = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if(!isAvailable){
-            AlertUserDialog dialog = new AlertUserDialog("Please Enable Location Services");
+            AlertUserDialog dialog = new AlertUserDialog("Please Enable Location Services" ,Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             dialog.show(getFragmentManager(),null);
         }
         return isAvailable;
@@ -122,7 +156,7 @@ public class MyActivity extends Activity {
         boolean isOff =
                 Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 0;
         if(!isOff){
-            AlertUserDialog dialog = new AlertUserDialog("Please disable Airplabe mode");
+            AlertUserDialog dialog = new AlertUserDialog("Please disable Airplabe mode", Settings.ACTION_AIRPLANE_MODE_SETTINGS);
             dialog.show(getFragmentManager(),null);
         }
         return isOff;
@@ -133,7 +167,7 @@ public class MyActivity extends Activity {
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         boolean isAvailable = wifiInfo.isAvailable();
         if(!isAvailable){
-            AlertUserDialog dialog = new AlertUserDialog("please enable yo wifi bitch");
+            AlertUserDialog dialog = new AlertUserDialog("Please Enable Your WiFi", Settings.ACTION_WIFI_SETTINGS);
             dialog.show(getFragmentManager(),null);
         }
         return isAvailable;
