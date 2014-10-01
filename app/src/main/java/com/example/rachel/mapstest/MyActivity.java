@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.net.NetworkInterface;
@@ -30,6 +31,7 @@ public class MyActivity extends FragmentActivity {
     LocationListener _networkListener;
     LocationListener _gpsListener;
     LocationListener _passiveLocationListener;
+    private GoogleMap mMap;
 
 
     NetworkProviderStatusReciever _statusReciever;
@@ -38,7 +40,7 @@ public class MyActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -104,8 +106,7 @@ public class MyActivity extends FragmentActivity {
 
     public void onStartNetworkListener(MenuItem item){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if(confirmNetworkProviderEnabled(lm)) {
+        if(confirmNetworkProviderAvailable(lm)) {
             _statusReciever = new NetworkProviderStatusReciever();
             _statusReciever.start(this);
             _networkListener = new MyLocationListener();
@@ -115,8 +116,8 @@ public class MyActivity extends FragmentActivity {
 
     public void onStartPassiveListener(MenuItem item){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         _passiveLocationListener = new MyLocationListener();
+        Log.d(_logTag,"Starting Passive");
         lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0, 0, _passiveLocationListener);
     }
 
@@ -137,9 +138,11 @@ public class MyActivity extends FragmentActivity {
 
     boolean confirmNetworkProviderAvailable (LocationManager lm) {
 
-        return confirmNetworkProviderEnabled(lm)&&
-                confirmWifiAvailable() &&
-                confirmAirplaneModeIsOff();
+        boolean networkAvailable =  confirmAirplaneModeIsOff()&&
+                confirmNetworkProviderEnabled(lm)&&
+                confirmWifiAvailable()
+                ;
+        return networkAvailable;
     }
 
     public boolean confirmNetworkProviderEnabled (LocationManager lm){
@@ -153,10 +156,13 @@ public class MyActivity extends FragmentActivity {
     }
 
     public boolean confirmAirplaneModeIsOff (){
+
+        Log.d(_logTag, "inside AirPlaneMode");
         boolean isOff =
                 Settings.System.getInt(getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) == 0;
+        Log.d(_logTag, "AirPlane Mode Is : "+isOff);
         if(!isOff){
-            AlertUserDialog dialog = new AlertUserDialog("Please disable Airplabe mode", Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+            AlertUserDialog dialog = new AlertUserDialog("Please disable Airplane mode", Settings.ACTION_AIRPLANE_MODE_SETTINGS);
             dialog.show(getFragmentManager(),null);
         }
         return isOff;
