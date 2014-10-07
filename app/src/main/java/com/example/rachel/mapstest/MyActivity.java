@@ -1,25 +1,26 @@
 package com.example.rachel.mapstest;
 
-import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-
-import java.net.NetworkInterface;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,10 +29,12 @@ import java.util.List;
 public class MyActivity extends FragmentActivity {
     final String _logTag = "Monitor Location";
 
+    private PendingIntent _locationChangeServicePendingIntent;
+    private PendingIntent _locationChangeBroadcastPendingIntent;
+
     LocationListener _networkListener;
     LocationListener _gpsListener;
     LocationListener _passiveLocationListener;
-    private GoogleMap mMap;
 
 
     NetworkProviderStatusReciever _statusReciever;
@@ -39,13 +42,21 @@ public class MyActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        
+       setContentView(R.layout.activity_maps);
+//        TrackingFragment fragment = new TrackingFragment();
+//        setContentView(R.layout.tracking_fragment);
+
+        Intent intent = new Intent(Globals.ACTION_LOCATION_CHANGED);
+        _locationChangeServicePendingIntent = PendingIntent.getService(this,0,intent,0);
+
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+//        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.pending_menu, menu);
+
         return true;
     }
 
@@ -55,23 +66,134 @@ public class MyActivity extends FragmentActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.accurate_provider) {
-            onAccurateProvider(item);
+//        if (id == R.id.accurate_provider) {
+//            onAccurateProvider(item);
+//            return true;
+//        }
+//        if (id == R.id.low_power_provider) {
+//            onLowPowerProvider(item);
+//            return true;
+//        }
+//        if (id == R.id.network_listener) {
+//            onStartNetworkListener(item);
+//            return true;
+//        }
+//        if (id == R.id.passive_listener) {
+//            onStartPassiveListener(item);
+//            return true;
+//        }
+//        if(id == R.id.ACTION_START_MONITORING){
+//            onMenuStartTrackingService(item);
+//            return true;
+//        }
+//        if(id== R.id.ACTION_STOP_MONITORING){
+//            onMenuStopTrackingService(item);
+//            return true;
+//        }
+        if(id == R.id.Start_Location_Service){
+            onMenuStartLocationForService(item);
             return true;
         }
-        if (id == R.id.low_power_provider) {
-            onLowPowerProvider(item);
+        if(id == R.id.Stop_Location_Service){
+            onMenuStopLocationForService();
             return true;
         }
-        if (id == R.id.network_listener) {
-            onStartNetworkListener(item);
-            return true;
-        }
-        if (id == R.id.passive_listener) {
-            onStartPassiveListener(item);
-            return true;
-        }
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onMenuFromLocation(MenuItem item){
+        Log.d(_logTag,"from Location Menu selected");
+        clearDisplay();
+        LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if(location == null){
+            Log.d(_logTag,"no Last Location Available");
+            return;
+        }
+
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 5);
+            int addressesReturned = addressList.size();
+            Log.d(_logTag,"number of addresses returned: "+ addressesReturned);
+
+            for(Address address: addressList){
+                displayAddressLines(address);
+                AddressHelper.logAddress(_logTag,address);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void onMenuFromPlaceName(MenuItem item){
+       Log.d(_logTag,"From Place Name menu selected");
+       clearDisplay();
+       String place = "Empire State Building,NYC";
+
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addressList = geocoder.getFromLocationName(place, 5);
+            int addressesReturned = addressList.size();
+            Log.d(_logTag,"number of addresses returned: "+ addressesReturned);
+
+            for(Address address: addressList){
+                displayAddressLines(address);
+                AddressHelper.logAddress(_logTag,address);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void onMenuUseAsyncTask(MenuItem item){
+        Log.d(_logTag,"Use Async Task menu selected");
+        String placeName = "10 Downing Street, London";
+    }
+
+    private void clearDisplay(){
+       // TextView textView = (TextView)findViewById(R.id.textView);
+    //    textView.setText("");
+    }
+
+    private void displayAddressLines(Address address){
+        int lastIndex = address.getMaxAddressLineIndex();
+        for(int i = 0; i>=lastIndex; i++){
+            String addressLine = address.getAddressLine(i);
+            addLineToDisplay(addressLine);
+        }
+        addLineToDisplay("" );
+    }
+
+    private void addLineToDisplay(CharSequence displayLine){
+//       TextView textView = findViewById(R.id.textView);
+//
+//      CharSequence existingText = textView.getText();
+//      CharSequence newText = existingText + "\n"+ displayLine;
+
+//        textView.setText(newText);
+
+    }
+
+
+    public void onMenuStartLocationForService(MenuItem item){
+        Log.d(_logTag, "Start Location for SERVICE menu selected");
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_locationChangeServicePendingIntent);
+    }
+
+    public void onMenuStopLocationForService(){
+        Log.d(_logTag, "Stop Location for SERVICE menu selected");
+
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        lm.removeUpdates(_locationChangeServicePendingIntent);
     }
 
     public void onAccurateProvider(MenuItem item){
@@ -243,4 +365,21 @@ public class MyActivity extends FragmentActivity {
             _networkListener = null;
         }
     }
+
+    public void onMenuStartTrackingService(MenuItem item){
+        startService(new Intent(TrackingService.ACTION_START_MONITORING));
+    }
+
+    public void onMenuStopTrackingService(MenuItem item){
+        startService(new Intent(TrackingService.ACTION_STOP_MONITORING));
+    }
+
+
+//    public void onMenuTrackingActivityWithFragment(MenuItem item){
+//        startActivity(new Intent(this, TrackingActivityWithFragment.class));
+//    }
+
+//    public void onMenuTrackingActivityOnly(MenuItem item){
+//        startActivity(this, TrackingActivity.class);
+//    }
 }

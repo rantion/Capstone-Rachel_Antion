@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/action_bar"
+    tools:context=".MyActivity">
+    <item android:id="@+id/activity_w_fragment"
+        android:title="Tracking Activity With Fragment"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id = "@+id/activity_only"
+        android:title="Tracking Activity Only"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id="@+id/start_tracking"
+        android:title="Start Tracking Service"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id = "@+id/stop_tracking"
+        android:title="Stop Tracking Service"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+</menu>

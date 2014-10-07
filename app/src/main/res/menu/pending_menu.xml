@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/action_bar"
+    tools:context=".MyActivity">
+    <item android:id="@+id/Start_Location_Service"
+        android:title="Start Monitoring"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id = "@+id/Stop_Location_Service"
+        android:title="Stop Monitoring"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+</menu>

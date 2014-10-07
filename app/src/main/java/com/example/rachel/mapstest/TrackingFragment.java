@@ -36,6 +36,7 @@ public class TrackingFragment extends Fragment implements LocationListener {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
 
@@ -47,14 +48,13 @@ public class TrackingFragment extends Fragment implements LocationListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstances){
-  //      _topView = inflater.inflate(R.layout.tracking_fragment, container, false);
-      //  return _topView;
-        return null;
+     _topView = inflater.inflate(R.layout.tracking_fragment, container, false);
+        return _topView;
     }
 
    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-    //   inflater.inflate(R.menu.tracking_menu, menu);
+       inflater.inflate(R.menu.tracking_menu, menu);
     }
 
   //  @Override
@@ -64,12 +64,12 @@ public class TrackingFragment extends Fragment implements LocationListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch(id){
-//            case R.id.menuStartTracking:
-//                onMenuStartTracking(item);
-//                break;
-//            case R.id.menuStopTracking:
-//                onMenuStopTracking(item);
-//                break;
+            case R.id.start_tracking:
+                onMenuStartTracking(item);
+                break;
+            case R.id.stop_tracking:
+                onMenuStopTracking(item);
+                break;
        }
 
         return true;
@@ -103,25 +103,35 @@ public class TrackingFragment extends Fragment implements LocationListener {
 
     public void setLocation(Location location){
 
-//        Log.d(LOGTAG,"Location Monitoring Fragment - setLocation " +LogHelper.threadId());
-//
-//        String latitudeString = String.format("%.6f", location.getLatitude());
-//        String longitudeString = String.format("%.6f", location.getLongitude());
-//
-//        try {
-//            TextView latitudeView = (TextView) _topView.findViewById(R.id.textViewLatitude);
-//            TextView longitudeView = (TextView) _topView.findViewById(R.id.textViewLongitude);
-//
-//            latitudeView.setText(latitudeString);
-//            longitudeView.setText(longitudeString);
-//        }
-//        catch(Exception ex){
-//            Log.e(MyActivity.LOGTAG, "Location Monitoring setLocation exception", ex);
-//        }
+        Log.d(LOGTAG,"Location Monitoring Fragment - setLocation ");
+
+        String latitudeString = String.format("%.6f", location.getLatitude());
+        String longitudeString = String.format("%.6f", location.getLongitude());
+
+        try {
+            TextView latitudeView = (TextView) _topView.findViewById(R.id.latitude);
+            TextView longitudeView = (TextView) _topView.findViewById(R.id.longitude);
+
+            latitudeView.setText(latitudeString);
+            longitudeView.setText(longitudeString);
+        }
+        catch(Exception ex){
+            Log.e(LOGTAG, "Location Monitoring setLocation exception", ex);
+        }
     }
 
     public void onLocationChanged(Location location){
-        setLocation(location);
+        Log.d(LOGTAG, "Location Management Fragment onLocationChanged");
+
+        final Location theLocation = location;
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setLocation(theLocation);
+            }
+        });
+
     }
 
     public void onStatusChanged(String s, int i, Bundle bundle){
